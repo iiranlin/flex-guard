@@ -4,16 +4,37 @@ import { UserCase, LegalAdvice } from "../types";
 // 🛠️ AI 接口配置中心 / AI Configuration Center
 // ============================================================================
 
+// 获取环境变量的辅助函数，兼容 Vite (import.meta.env) 和 普通 process.env
+// 注意：为了让构建工具正确替换，必须静态访问 process.env.XXX
+const getApiKey = () => {
+  
+
+  // 3. 默认值
+  return process.env.TOKEN
+};
+
+const getBaseUrl = () => {
+    try {
+        // @ts-ignore
+        if (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_BASE_URL) return import.meta.env.VITE_BASE_URL;
+        if (typeof process !== 'undefined' && process.env && process.env.BASE_URL) return process.env.BASE_URL;
+    } catch(e) {}
+    return "https://open.bigmodel.cn/api/paas/v4/";
+}
+
+const getModelName = () => {
+    try {
+        // @ts-ignore
+        if (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_MODEL_NAME) return import.meta.env.VITE_MODEL_NAME;
+        if (typeof process !== 'undefined' && process.env && process.env.MODEL_NAME) return process.env.MODEL_NAME;
+    } catch(e) {}
+    return "glm-4-flash";
+}
+
 const AI_CONFIG = {
-  // 🟢 OpenAI 兼容接口配置
-  // 基础地址: 对应 curl 中的 --url https://.../v1
-  baseUrl: process.env.BASE_URL || "https://api.openai.com/v1",
-  
-  // API Key: 对应 curl 中的 --header 'Authorization: Bearer ...'
-  apiKey: process.env.API_KEY,
-  
-  // 模型名称
-  model: process.env.MODEL_NAME || "gpt-4o",
+  baseUrl: getBaseUrl(),
+  apiKey: getApiKey(),
+  model: getModelName(),
 };
 
 // ============================================================================
@@ -38,18 +59,24 @@ async function* streamRequest(messages: any[]): AsyncGenerator<string, void, unk
   // 移除可能存在的末尾斜杠
   const cleanBaseUrl = baseUrl.replace(/\/+$/, '');
   const endpoint = `${cleanBaseUrl}/chat/completions`;
+
+  console.log(AI_CONFIG,'config')
   
+
+  // 调试日志 (开发模式可见)
+  console.log(`[AI Service] Sending request to ${model}`);
+
   const response = await fetch(endpoint, {
       method: 'POST',
-      headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${apiKey}`
-      },
+       headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${apiKey}`
+        },
       body: JSON.stringify({
           model: model,
           messages: messages,
           temperature: 0.7,
-          stream: true // ✅ 开启流式传输
+          stream: true
       })
   });
 
