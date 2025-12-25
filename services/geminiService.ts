@@ -10,7 +10,7 @@ const getApiKey = () => {
   
 
   // 3. 默认值
-  return process.env.TOKEN
+  return process.env.API_KEY
 };
 
 const getBaseUrl = () => {
