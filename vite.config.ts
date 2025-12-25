@@ -11,8 +11,10 @@ export default defineConfig(({ mode }) => {
       },
       plugins: [react()],
       define: {
-        'process.env.API_KEY': JSON.stringify(env.API_KEY),
-        'process.env.GEMINI_API_KEY': JSON.stringify(env.GEMINI_API_KEY)
+        // 支持所有环境变量，在构建时注入
+      'process.env.API_KEY': JSON.stringify(env.API_KEY),
+      'process.env.BASE_URL': JSON.stringify(env.BASE_URL || 'https://open.bigmodel.cn/api/paas/v4'),
+      'process.env.MODEL_NAME': JSON.stringify(env.MODEL_NAME || 'glm-4-flash'),
       },
       resolve: {
         alias: {
