@@ -87,7 +87,7 @@ export const LegalLetter: React.FC = () => {
                 <textarea 
                     className="w-full border border-gray-200 rounded-lg p-3 mt-1 text-sm focus:outline-none focus:border-blue-500 transition-colors" 
                     rows={4}
-                    placeholder="例如：2023年10月工资未发，要求立即支付..."
+                    placeholder="例如：2025年8月工资未发，要求立即支付..."
                     value={formData.description}
                     onChange={e => setFormData({...formData, description: e.target.value})}
                 />
